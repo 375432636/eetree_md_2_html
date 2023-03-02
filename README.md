@@ -19,10 +19,10 @@ pip install markdown lxml
 使用以下命令将 Markdown 文件转换为 HTML 文件：
 
 ```
-python main.py input.md output.html
+python main.py example.md example.html
 ```
 
-其中，`main.py` 是脚本文件名，`input.md` 是输入的 Markdown 文件名，`output.html` 是输出的 HTML 文件名。
+其中，`main.py` 是脚本文件名，`example.md` 是输入的 Markdown 文件名，`example.html` 是输出的 HTML 文件名。
 
 ## 说明
 
@@ -33,7 +33,7 @@ python main.py input.md output.html
 
 ## 示例
 
-- 输入的 Markdown 文件 `input.md` 内容如下：
+- 输入的 Markdown 文件 `example.md` 内容如下：
 
   ````
   # 1. 标题1 代码
@@ -71,10 +71,10 @@ python main.py input.md output.html
 - 运行以下命令：
 
   ```
-  python main.py example.md output.html
+  python main.py example.md example.html
   ```
 
-- 输出的 HTML 文件 `output.html` 内容如下：
+- 输出的 HTML 文件 `example.html` 内容如下：
 
   ```
   <html><body><h1><span style="font-size: 24pt;"><strong>1. 标题1 代码</strong></span></h1>
@@ -104,6 +104,6 @@ python main.py input.md output.html
   </ol></body></html>
   ```
 
-* 将`output.html`中的代码直接复制到硬禾学堂的编辑器的源码中即可直接生成网页，图片同时也完成上传。
+* 将`example.html`中的代码直接复制到硬禾学堂的编辑器的源码中即可直接生成网页，图片同时也完成上传。
 
 ​		![图片2](./example/screen.jpg)
