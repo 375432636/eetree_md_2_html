@@ -1,28 +1,59 @@
-import markdown
-from lxml import etree
-from lxml.etree import tounicode
+import argparse
 import base64
-# import re
+import markdown
+from pathlib import Path
+from lxml import etree
 
-with open("./main.md", "r",encoding="utf8") as f:
-    TEXT = f.read()
-# print(TEXT)
-# TEXT = TEXT.replace("```","```\n\r")
-HTML = markdown.markdown(TEXT,extensions=['attr_list','fenced_code'])
+def parse_args():
+    parser = argparse.ArgumentParser(description="Convert markdown file to HTML")
+    parser.add_argument("input_file", help="input markdown file")
+    parser.add_argument("output_file", help="output HTML file")
+    return parser.parse_args()
 
-tree = etree.HTML(HTML)
-for i in tree.xpath('//pre'):
-    i.attrib['class'] = 'language-c'
-# tree.find('idinfo/timeperd/timeinfo/rngdates/enddate').text = '1/1/2011'
-for i in tree.xpath("//img"):
-    # print(i.attrib['src'])
-    src = i.attrib['src']
-    with open(src, "rb") as image_file:
-        i.attrib['src'] = "data:image/jpeg;base64,"+ base64.b64encode(image_file.read()).decode()
-for i in tree.xpath("//*[self::h1 or self::h2 or self::h3]"):
-    i.append(etree.XML(f"""<span style="font-size: 24pt;"><strong>{i.text}</strong></span>""").xpath("//span")[0])
-    i.text = ""
-# HTML = tounicode(i,method="HTML",with_tail=False)
-HTML = tounicode(tree,method="HTML",with_tail=False)
-with open("./out.html","w",encoding="utf8") as f:
-    f.write(HTML)
+
+
+def read_markdown_file(file_path: Path) -> str:
+    with open(file_path,encoding="utf8") as f:
+        return f.read()
+
+
+def convert_markdown_to_html(markdown_text: str) -> str:
+    extensions = ["attr_list", "fenced_code"]
+    return markdown.markdown(markdown_text, extensions=extensions)
+
+
+def add_code_block_class(html_tree: etree.Element) -> None:
+    for pre in html_tree.xpath('//pre'):
+        pre.attrib['class'] = 'language-c'
+
+
+def encode_images_as_base64(html_tree: etree.Element) -> None:
+    for img in html_tree.xpath("//img"):
+        src = img.attrib['src']
+        with open(src, "rb") as image_file:
+            encoded_image = base64.b64encode(image_file.read()).decode()
+        img.attrib['src'] = f"data:image/jpeg;base64,{encoded_image}"
+
+
+def add_heading_styles(html_tree: etree.Element) -> None:
+    for heading in html_tree.xpath("//*[self::h1 or self::h2 or self::h3]"):
+        span = etree.XML(f'<span style="font-size: 24pt;"><strong>{heading.text}</strong></span>')
+        heading.text = ""
+        heading.append(span)
+
+
+if __name__ == "__main__":
+    args = parse_args()
+    input_file = Path(args.input_file)
+    output_file = Path(args.output_file)
+
+    markdown_text = read_markdown_file(input_file)
+    html_text = convert_markdown_to_html(markdown_text)
+    html_tree = etree.HTML(html_text)
+
+    add_code_block_class(html_tree)
+    encode_images_as_base64(html_tree)
+    add_heading_styles(html_tree)
+    html_output = etree.tostring(html_tree, method="html", with_tail=False, encoding="unicode")
+    with open(output_file, "w",encoding="utf8") as f:
+        f.write(html_output)
