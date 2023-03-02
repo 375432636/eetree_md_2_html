@@ -32,7 +32,8 @@ def encode_images_as_base64(html_tree: etree.Element) -> None:
         src = img.attrib['src']
         with open(src, "rb") as image_file:
             encoded_image = base64.b64encode(image_file.read()).decode()
-        img.attrib['src'] = f"data:image/jpeg;base64,{encoded_image}"
+        ext = src.split('.')[-1]
+        img.attrib['src'] = f"data:image/{ext};base64,{encoded_image}"
 
 
 def add_heading_styles(html_tree: etree.Element) -> None:
