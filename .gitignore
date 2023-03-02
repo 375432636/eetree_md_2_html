@@ -1,0 +1,5 @@
+*.html
+build
+dist
+*.spec
+.idea
