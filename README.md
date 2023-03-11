@@ -4,6 +4,7 @@
 
 - 为代码块添加 `language-c` 类。
 - 将 HTML 中的图片编码为 base64，粘贴到源码的过程中即完成了上传，支持多张图片同时上传。
+- 对 HTML 中的图片大小进行控制。
 - 对 HTML 中的标题添加样式。
 
 ## 安装依赖项
@@ -11,7 +12,7 @@
 使用以下命令安装依赖项：
 
 ```
-pip install markdown lxml
+pip install markdown lxml Pillow
 ```
 
 ## 使用方法
@@ -29,7 +30,9 @@ python main.py example.md example.html
 - 输入文件必须是 Markdown 格式，输出文件将以 HTML 格式保存。
 - 转换过程中，会将 Markdown 文件中的代码块添加 `language-c` 类，因此 HTML 文件中的代码块将具有合适的样式。
 - 如果 Markdown 文件中包含图片，则会将图片编码为 base64 格式，并将 HTML 文件中的 `img` 标签的 `src` 属性替换为 base64 编码后的图片。
+- 自动缩图，过程中会检查图片的储存，自动将宽度在720以上的图片缩小为720。防止图片过大造成上传失败。
 - HTML 文件中的标题将添加样式。
+- 支持格式包括jpg,jpge,png,svg，其他格式尚未测试。
 
 ## 示例
 
