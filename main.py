@@ -20,22 +20,30 @@ class Compress_img:
         self.img_name = os.path.split(self.img_full_path)[-1]
         self.ext = self.img_name.lower().split(".")[-1]
 
-    def compress_img_PIL(self, compress_rate=0.5, show=False) -> str:
+    def compress_img_PIL(self, compress_rate=0.5, show=False):
         if "svg" == self.ext:
+            self.ext = "svg+xml"
+            self.new_path = self.img_full_path
             return self.img_full_path
         img = Image.open(self.img_full_path)
         img = ImageOps.exif_transpose(img)
         h, w = img.size
         max_width = int(720)
         if w > max_width:
+            # if grate then
             new_high = int(max_width/w*h)
             new_width = int(max_width)
             img_resize = img.resize(( new_high, new_width ))
-            new_path = os.path.join(self.img_path, NOW + self.img_name)
-            img_resize.save(str(new_path))
+            self.new_path = os.path.join(self.img_path, NOW + self.img_name)
+            img_resize.save(str(self.new_path))
         else:
-            new_path = self.img_full_path
-        return new_path
+            # if no grate then
+            self.new_path = self.img_full_path
+
+    def image_to_base(self)->str:
+        with open(self.new_path, "rb") as image_file:
+            encoded_image = base64.b64encode(image_file.read()).decode()
+        return f"data:image/{self.ext};base64,{encoded_image}"
 
 def parse_args():
     parser = argparse.ArgumentParser(description="Convert markdown file to HTML")
@@ -62,11 +70,9 @@ def add_code_block_class(html_tree: etree.Element) -> None:
 
 def encode_images_as_base64(html_tree: etree.Element) -> None:
     for img in html_tree.xpath("//img"):
-        src = Compress_img(img.attrib['src']).compress_img_PIL()
-        with open(src, "rb") as image_file:
-            encoded_image = base64.b64encode(image_file.read()).decode()
-        ext = src.split('.')[-1]
-        img.attrib['src'] = f"data:image/{ext};base64,{encoded_image}"
+        img_obj = Compress_img(img.attrib['src'])
+        img_obj.compress_img_PIL()
+        img.attrib['src'] = img_obj.image_to_base()
 
 
 def add_heading_styles(html_tree: etree.Element) -> None:
