@@ -15,6 +15,10 @@ int main() {
 
 ![图片2](./example/image2.jpg)
 
+![图片3](./example/image3.svg)
+
+![图片4](./example/image4.png)
+
 # 3. 标题3 序号
 
 1. 序号1
