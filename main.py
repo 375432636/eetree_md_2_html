@@ -19,6 +19,7 @@ class Compress_img:
         self.img_path = os.path.split(self.img_full_path)[0]
         self.img_name = os.path.split(self.img_full_path)[-1]
         self.ext = self.img_name.lower().split(".")[-1]
+        self.need_delete = False
 
     def compress_img_PIL(self, compress_rate=0.5, show=False):
         if "svg" == self.ext:
@@ -34,8 +35,9 @@ class Compress_img:
             new_high = int(max_width/w*h)
             new_width = int(max_width)
             img_resize = img.resize(( new_high, new_width ))
-            self.new_path = os.path.join(self.img_path, NOW + self.img_name)
+            self.new_path = os.path.join(self.img_path, NOW + self.img_name) # save to temp file
             img_resize.save(str(self.new_path))
+            self.need_delete = True
         else:
             # if no grate then
             self.new_path = self.img_full_path
@@ -43,6 +45,8 @@ class Compress_img:
     def image_to_base(self)->str:
         with open(self.new_path, "rb") as image_file:
             encoded_image = base64.b64encode(image_file.read()).decode()
+        if self.need_delete and os.path.exists(self.new_path): # if the img file is create by program
+            os.remove(self.new_path) # delete the temp file
         return f"data:image/{self.ext};base64,{encoded_image}"
 
 def parse_args():
